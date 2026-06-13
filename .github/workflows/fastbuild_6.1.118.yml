@@ -334,7 +334,10 @@ jobs:
               echo "正在添加ksu safety补丁..."
               wget https://github.com/Enginex0/Super-Builders/raw/refs/heads/main/${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/ReSukiSU/patches/70_ksu_safety-resukisu-${{ env.KERNEL_VERSION }}.patch -O ./common/70_ksu_safety.patch
               cd ./common
-              patch -p1 < 70_ksu_safety.patch
+              patch -p1 < 70_ksu_safety.patch || true
+              cd ..
+            fi
+          fi
 
       - name: 应用lz4 1.10.0 & zstd 1.5.7补丁
         if: inputs.lz4_enable
