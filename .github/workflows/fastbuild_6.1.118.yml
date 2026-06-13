@@ -315,7 +315,19 @@ jobs:
             cd ./KernelSU
             patch -p1 < 10_enable_susfs_for_ksu.patch || true
           fi
-          
+
+      - name: 应用 Zeromount 补丁
+        if: inputs.susfs_enable
+        run: |
+          cd kernel_workspace
+          if [[ ${{ github.event.inputs.ksu_type }} != "none" ]]; then
+            wget https://github.com/Enginex0/Super-Builders/raw/refs/heads/main/${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/ReSukiSU/patches/60_zeromount-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch -O ./common/60_zeromount.patch
+            wget https://github.com/Enginex0/Super-Builders/raw/refs/heads/main/${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/ReSukiSU/patches/_archive/65_zeromount-adb-filter-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch -O ./common/65_zeromount-adb-filter.patch
+            cd ./common
+            patch -p1 -N -F 3 < 60_zeromount.patch || true
+            patch -p1 -N -F 3 < 65_zeromount-adb-filter.patch || true
+          fi
+
       - name: 应用lz4 1.10.0 & zstd 1.5.7补丁
         if: inputs.lz4_enable
         run: |
