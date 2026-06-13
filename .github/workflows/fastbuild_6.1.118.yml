@@ -299,11 +299,13 @@ jobs:
             echo "正在添加susfs补丁..."
             git clone --depth=1 https://github.com/cctv18/susfs4oki.git susfs4ksu -b oki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}
             wget https://github.com/$GITHUB_REPOSITORY/raw/refs/heads/$GITHUB_REF_NAME/other_patch/69_hide_stuff.patch -O ./common/69_hide_stuff.patch
-            cp ./susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch ./common/
+            wget https://github.com/Enginex0/Super-Builders/raw/refs/heads/main/${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/ReSukiSU/patches/50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch -O ./common/50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch
+            wget https://github.com/Enginex0/Super-Builders/raw/refs/heads/main/${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/ReSukiSU/patches/51_enhanced_susfs-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch -O ./common/51_enhanced_susfs.patch
             cp ./susfs4ksu/kernel_patches/fs/* ./common/fs/
             cp ./susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
             cd ./common
             patch -p1 < 50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch || true
+            patch -p1 < 51_enhanced_susfs.patch || true
             patch -p1 -N -F 3 < 69_hide_stuff.patch || true
             cd ..
           else
@@ -315,7 +317,25 @@ jobs:
             cd ./KernelSU
             patch -p1 < 10_enable_susfs_for_ksu.patch || true
           fi
-          
+
+      - name: 应用 Zeromount 与 KSU Safety 补丁
+        if: inputs.susfs_enable
+        run: |
+          cd kernel_workspace
+          if [[ ${{ github.event.inputs.ksu_type }} != "none" ]]; then
+            echo "正在添加zeromount补丁..."
+            wget https://github.com/Enginex0/Super-Builders/raw/refs/heads/main/${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/ReSukiSU/patches/60_zeromount-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch -O ./common/60_zeromount.patch
+            wget https://github.com/Enginex0/Super-Builders/raw/refs/heads/main/${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/ReSukiSU/patches/_archive/65_zeromount-adb-filter-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch -O ./common/65_zeromount-adb-filter.patch
+            cd ./common
+            patch -p1 < 60_zeromount.patch || true
+            patch -p1 < 65_zeromount-adb-filter.patch || true
+            cd ..
+            if [[ ${{ github.event.inputs.ksu_type }} == "resukisu" || ${{ github.event.inputs.ksu_type }} == "sukisu" ]]; then
+              echo "正在添加ksu safety补丁..."
+              wget https://github.com/Enginex0/Super-Builders/raw/refs/heads/main/${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/ReSukiSU/patches/70_ksu_safety-resukisu-${{ env.KERNEL_VERSION }}.patch -O ./common/70_ksu_safety.patch
+              cd ./common
+              patch -p1 < 70_ksu_safety.patch
+
       - name: 应用lz4 1.10.0 & zstd 1.5.7补丁
         if: inputs.lz4_enable
         run: |
