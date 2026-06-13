@@ -301,10 +301,8 @@ jobs:
             wget https://github.com/$GITHUB_REPOSITORY/raw/refs/heads/$GITHUB_REF_NAME/other_patch/69_hide_stuff.patch -O ./common/69_hide_stuff.patch
             wget https://github.com/Enginex0/Super-Builders/raw/refs/heads/main/${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/ReSukiSU/patches/50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch -O ./common/50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch
             wget https://github.com/Enginex0/Super-Builders/raw/refs/heads/main/${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}/ReSukiSU/patches/51_enhanced_susfs-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch -O ./common/51_enhanced_susfs.patch
-            cp ./susfs4ksu/kernel_patches/fs/* ./common/fs/
-            cp ./susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
             cd ./common
-            patch -p1 < 50_add_susfs_in_gki-${{ env.ANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch || true
+            patch -p1 < 50_add_susfs_in_gki.patch || true
             patch -p1 < 51_enhanced_susfs.patch || true
             patch -p1 -N -F 3 < 69_hide_stuff.patch || true
             cd ..
