@@ -577,7 +577,16 @@ jobs:
               sed -i "\$s|echo \"\\\$res\"|echo \"-${{ env.KERNEL_NAME }}\"|" "$f"
             done
           fi
-           
+
+      - name: 检查补丁应用状态
+        run: |
+          cd kernel_workspace/common
+          echo "=== 检查是否有补丁冲突残留 ==="
+          find . -name "*.rej" -o -name "*.orig" | head -20
+          echo "=== 检查关键文件是否存在 ==="
+          ls -la fs/susfs.c 2>/dev/null || echo "susfs.c 不存在"
+          ls -la fs/zeromount.c 2>/dev/null || echo "zeromount.c 不存在"
+
       - name: 构建内核
         run: |
           WORKDIR="$(pwd)"
